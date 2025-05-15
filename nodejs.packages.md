@@ -8,12 +8,15 @@ This guide walks you through the process of creating and managing reusable Node.
 
 A Node.js package is a reusable module that can be imported into other projects. To create one, start by creating a project directory and running npm init:
 
+```sh
 mkdir my-package
 cd my-package
 npm init
+```
 
 This command generates a package.json file where you define properties such as:
 
+```sh
 {
   "name": "my-package",
   "version": "1.0.0",
@@ -24,8 +27,9 @@ This command generates a package.json file where you define properties such as:
   "dependencies": {},
   "devDependencies": {}
 }
+```
 
-You can also use npm init -y to skip the prompts and use default values. If the package is private, you can add "private": true to the package.json.
+You can also use `npm init -y` to skip the prompts and use default values. If the package is private, you can add "private": true to the package.json.
 
 ⸻
 
@@ -37,29 +41,37 @@ Option 1: npm link
 
 This creates a global symlink to your package, which you can use in other projects:
 
+```sh
 cd ~/projects/my-lib
 npm link
 
 cd ~/projects/my-app
 npm link my-lib
+```
 
 Alternatively:
 
+```sh
 npm link ../my-lib
+```
 
 Option 2: Local Paths or Git URLs
 
-You can also use a local file path or a Git URL in your package.json:
+You can also use a local file path or a Git URL in your `package.json`:
 
+```sh
 "dependencies": {
   "my-lib": "file:../my-lib"
 }
+```
 
 Or for a private GitHub repository:
 
+```sh
 "dependencies": {
   "my-lib": "git+ssh://[email protected]/user/my-lib.git#v1.2.3"
 }
+```
 
 This fetches the package by tag or branch.
 
@@ -89,6 +101,7 @@ These principles shape your code structure and promote clean, modular, and exten
 
 Here’s a typical structure for a well-designed local package:
 
+```sh
 my-package/
 ├── src/           # Source code
 ├── dist/          # Compiled/bundled output
@@ -97,6 +110,7 @@ my-package/
 ├── package.json
 ├── README.md
 └── tsconfig.json  # TypeScript config
+```
 
 This organization encourages separation of concerns and makes testing and distribution cleaner.
 
@@ -108,35 +122,43 @@ Jest is a widely used testing framework that works great with both JS and TS.
 
 Setup:
 
+```sh
 npm install --save-dev jest ts-jest @types/jest
+```
 
-Create a basic jest.config.js:
+Create a basic `jest.config.js`:
 
+```sh
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node"
 };
+```
 
-Add this to your package.json:
+Add this to your `package.json`:
 
+```sh
 "scripts": {
   "test": "jest"
 }
+```
 
 Create test files alongside your source code or in a tests/ folder:
 
+```sh
 // tests/math.test.ts
 import { add } from '../src/math';
 
 test('adds numbers', () => {
   expect(add(2, 3)).toBe(5);
 });
+```
 
 Run tests with:
 
+```sh
 npm test
-
-
+```
 
 ⸻
 
@@ -158,10 +180,13 @@ TypeScript is highly recommended for reusable packages. It improves reliability 
 
 Install and Configure:
 
+```sh
 npm install --save-dev typescript
+```
 
-Create a tsconfig.json:
+Create a `tsconfig.json`:
 
+```sh
 {
   "compilerOptions": {
     "target": "ES2019",
@@ -172,14 +197,17 @@ Create a tsconfig.json:
   },
   "include": ["src"]
 }
+```
 
-Update your package.json:
+Update your `package.json`:
 
+```sh
 {
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"]
 }
+```
 
 When you compile with tsc, TypeScript will output both the compiled JS and the .d.ts type declarations.
 
@@ -189,14 +217,17 @@ When you compile with tsc, TypeScript will output both the compiled JS and the .
 
 Use a bundler to produce clean output (CommonJS/ESM) and make the package ready for consumption.
 
-Recommended: Tsup
+Recommended: `Tsup`
 
 Install:
 
+```sh
 npm install --save-dev tsup
+```
 
-Create tsup.config.ts:
+Create `tsup.config.ts`:
 
+```sh
 import { defineConfig } from "tsup";
 
 export default defineConfig({
@@ -205,18 +236,23 @@ export default defineConfig({
   dts: true,
   clean: true
 });
+```
 
 Run with:
 
+```sh
 npx tsup
+```
 
-Update package.json:
+Update `package.json`:
 
+```sh
 {
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts"
 }
+```
 
 This gives consumers both CommonJS and ESM versions of your package.
 
@@ -228,14 +264,18 @@ Use Semantic Versioning: MAJOR.MINOR.PATCH.
 
 Tag releases in Git:
 
+```sh
 git tag v1.2.0
 git push origin v1.2.0
+```
 
 Consume the package via Git in other projects:
 
+```json
 "dependencies": {
   "my-lib": "git+ssh://[email protected]/my-org/my-lib.git#v1.2.0"
 }
+```
 
 Or set up GitHub Packages as a private npm registry and use an .npmrc file for authentication.
 
@@ -247,10 +287,11 @@ Or set up GitHub Packages as a private npm registry and use an .npmrc file for a
 	•	Husky: Run pre-commit hooks for linting and tests.
 	•	GitHub Actions: Set up CI to run lint and tests on every push/PR.
 
-Example .github/workflows/ci.yml for Node.js:
+Example `.github/workflows/ci.yml` for Node.js:
 
 name: CI
 
+```sh
 on:
   push:
     branches: [main]
@@ -267,9 +308,7 @@ jobs:
       - run: npm install
       - run: npm run lint
       - run: npm test
-
-
-
+```
 ⸻
 
 Summary
@@ -281,7 +320,3 @@ By following this guide, you’ll build a reusable, well-structured, tested, and
 	•	Use Jest for testing, TypeScript for types, and a bundler (e.g., Tsup) for distribution.
 	•	Version your releases and link or install your package via Git.
 	•	Optionally, use CI/CD and code quality tools.
-
-Let me know if you’d like a project starter template with this setup preconfigured.
-
-Confidence: 100%
